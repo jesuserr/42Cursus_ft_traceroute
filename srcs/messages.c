@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:19:03 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/13 22:06:24 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/13 22:22:04 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,7 @@ void	print_header(t_ping_data *ping_data)
 // needed to access original timestamp and calculate RTT. If the packet is not
 // addressed to us, it is discarded.
 // 1   172.29.160.1  0.125ms  0.097ms  0.059ms 
-// 2   192.168.1.1  0.416ms  0.330ms  0.338ms 
-// ping_data->ttl_packets_received++; (needed?)
+// 2   192.168.1.1  0.416ms  0.330ms  0.338ms
 void	print_response_line(t_ping_data *ping_data, char *buff, \
 		struct iphdr *ip_header)
 {

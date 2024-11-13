@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:17:24 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/13 22:18:38 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/13 22:21:48 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,6 @@ typedef struct s_ping_data
 	struct addrinfo		hints;
 	int					sockfd;
 	char				ip_str[INET_ADDRSTRLEN];
-	uint16_t			packets_received;
-	uint16_t			ttl_packets_received;
 }	t_ping_data;
 
 /*
