@@ -6,31 +6,11 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:17:00 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/12 18:20:02 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/13 13:59:31 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_traceroute.h"
-
-// Mandatory: -h or -?, -v and -V (3)
-// Bonus: -c <count>, -D, -i <interval>, -q, -t <ttl> and -W <timeout> (6)
-void	print_usage(void)
-{
-	printf("Usage\n"
-		"  ./ft_traceroute [options] <destination>\n\n"
-		"Options:\n"
-		"  <destination>      dns name or ip address\n"
-		"  -c <count>         stop after <count> replies\n"
-		"  -D                 print timestamps\n"
-		"  -h or -?           print help and exit\n"
-		"  -i <interval>      seconds between sending each packet\n"
-		"  -q                 quiet output\n"
-		"  -t <ttl>           define time to live\n"
-		"  -v                 verbose output\n"
-		"  -V                 print version and exit\n"
-		"  -W <timeout>       time to wait for response\n");
-	exit(EXIT_SUCCESS);
-}
 
 // Sets the socket options to deal with TTL and timeout. The values are set
 // according to the arguments passed or the default values if no arguments are
@@ -40,10 +20,9 @@ void	set_socket_ttl_and_timeout(t_ping_data *ping_data)
 	int				ret;
 	struct timeval	timeout;
 
-	ret = setsockopt(ping_data->sockfd, IPPROTO_IP, IP_TTL, \
-	&ping_data->args.ttl, sizeof(ping_data->args.ttl));
-	if (ret == -1)
-		print_perror_and_exit("setsockopt ttl", ping_data);
+	//ret = setsockopt(ping_data->sockfd, IPPROTO_IP, IP_TTL, &ping_data->args.ttl, sizeof(ping_data->args.ttl));
+	//if (ret == -1)
+	//	print_perror_and_exit("setsockopt ttl", ping_data);
 	timeout.tv_sec = ping_data->args.timeout;
 	timeout.tv_usec = 0;
 	ret = setsockopt(ping_data->sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, \
@@ -92,9 +71,10 @@ int	main(int argc, char **argv)
 		print_error_and_exit("Destination address required");
 	ft_bzero(&ping_data, sizeof(t_ping_data));
 	parse_arguments(argc, argv, &ping_data.args);
-	init_signals(&ping_data);
-	init_ping_data_and_socket(&ping_data);
-	set_socket_ttl_and_timeout(&ping_data);
-	ping_loop(&ping_data);
+	ft_hex_dump(&ping_data.args, 16, 8);
+	//init_signals(&ping_data);
+	//init_ping_data_and_socket(&ping_data);
+	//set_socket_ttl_and_timeout(&ping_data);
+	//ping_loop(&ping_data);
 	return (EXIT_SUCCESS);
 }

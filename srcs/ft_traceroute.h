@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:17:24 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/12 18:17:33 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/13 12:18:03 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,10 @@
 # define PAYLOAD_40_B		"Written by Jesus Serrano on November '24"
 # define BUFFER_LEN			1024
 # define FLOAT_MAX			3.402823466e+38F
-# define DEFAULT_INTERVAL	1					// seconds
-# define DEFAULT_TTL		64					// hops
-# define DEFAULT_TIMEOUT	10					// seconds
+# define DEFAULT_FIRST_HOP	1					// first_hop
+# define DEFAULT_MAX_HOPS	64					// max_hops
+# define DEFAULT_PACKETS	3					// packets_per_hop
+# define DEFAULT_TIMEOUT	3					// seconds
 
 /*
 ** -.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-
@@ -57,14 +58,11 @@
 typedef struct s_arguments
 {
 	char		*dest;
-	bool		verbose_mode;
-	bool		print_timestamps;
-	bool		interval;
-	bool		quiet_mode;
-	int32_t		count;
-	int32_t		interval_seconds;
-	int32_t		timeout;
-	u_int8_t	ttl;
+	bool		resolve_hostnames;
+	u_int8_t	first_hop;
+	u_int8_t	max_hops;
+	u_int8_t	packets_per_hop;
+	u_int8_t	timeout;	
 }	t_arguments;
 
 typedef struct s_icmp_packet
@@ -102,13 +100,10 @@ typedef struct s_ping_data
 ** -.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-
 **                        FUNCTION PROTOTYPES
 */
-/********************************** ft_ping.c *********************************/
+/********************************** ft_traceroute.c ***************************/
 const char	*turn_ip_to_str(t_ping_data *ping_data, void *src, char *dst);
 void		fill_and_send_icmp_packet(t_ping_data *ping_data);
 void		ping_loop(t_ping_data *ping_data);
-
-/********************************** main.c ************************************/
-void		print_usage(void);
 
 /********************************** messages.c ********************************/
 void		print_header(t_ping_data *ping_data);
@@ -122,8 +117,8 @@ void		print_summary(t_ping_data *ping_data);
 void		parse_arguments(int argc, char **argv, t_arguments *args);
 
 /********************************** signals.c *********************************/
-void		init_signals(t_ping_data *ping_data);
-void		signal_handler(int sig);
+//void		init_signals(t_ping_data *ping_data);
+//void		signal_handler(int sig);
 void		print_error_and_exit(char *str);
 void		print_perror_and_exit(char *msg, t_ping_data *ping_data);
 

@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:19:20 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/12 18:19:21 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/13 14:00:43 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 // Static variable to store a pointer to the ping_data struct to be used in the
 // signal handler. Scope is limited to this file. (variable is not global).
-static t_ping_data	*g_static_ping_data = NULL;
-
+//static t_ping_data	*g_static_ping_data = NULL;
+/*
 void	init_signals(t_ping_data *ping_data)
 {
 	g_static_ping_data = ping_data;
@@ -24,12 +24,13 @@ void	init_signals(t_ping_data *ping_data)
 	if (signal(SIGINT, signal_handler) == SIG_ERR)
 		print_perror_and_exit("SIGINT signal", NULL);
 }
+*/
 
 // (SIGALRM) When 'count' number of packets transmitted is reached, no more
 // packets must be sent, therefore alarm() is not set and SIGALRM is disabled.
 // (SIGINT) When the user presses Ctrl+C, summary lines are printed, socket is
 // closed and the program exits.
-void	signal_handler(int sig)
+/*void	signal_handler(int sig)
 {
 	if (sig == SIGALRM)
 	{
@@ -47,11 +48,12 @@ void	signal_handler(int sig)
 		exit(EXIT_SUCCESS);
 	}
 }
-
+*/
 void	print_error_and_exit(char *str)
 {
-	printf("ft_ping: usage error: %s\n", str);
-	printf("Try 'ft_ping -h' or 'ft_ping -?' for more information.\n");
+	printf("ft_traceroute: usage error: %s\n", str);
+	printf("Try 'ft_traceroute -h' or 'ft_traceroute -?' for more ");
+	printf("information.\n");
 	exit (EXIT_FAILURE);
 }
 
