@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:18:46 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/13 22:03:23 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/13 23:34:27 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ void	receive_packet(t_ping_data *ping_data)
 }
 
 // Main traceroute function
+// Add condition to finish when the destination is reached
 void	traceroute(t_ping_data *ping_data)
 {
 	int	i;
@@ -99,16 +100,15 @@ void	traceroute(t_ping_data *ping_data)
 	i = 1;
 	while (i <= ping_data->args.max_hops)
 	{
-		printf("%3d   ", i);
+		printf("%3d   ", i++);
 		j = 1;
-		while (j <= ping_data->args.packets_per_hop)
+		set_socket_ttl(ping_data, ping_data->args.first_hop++);
+		while (j++ <= ping_data->args.packets_per_hop)
 		{
 			fill_and_send_icmp_packet(ping_data);
 			receive_packet(ping_data);
-			j++;
 		}
 		ping_data->packet.icmp_header.un.echo.sequence = 0;
-		i++;
 		printf("\n");
 	}
 	close(ping_data->sockfd);

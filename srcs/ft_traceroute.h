@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:17:24 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/13 22:21:48 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/13 23:31:20 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,9 @@ typedef struct s_ping_data
 */
 /********************************** ft_traceroute.c ***************************/
 void		traceroute(t_ping_data *ping_data);
+
+/********************************** main.c ************************************/
+void		set_socket_ttl(t_ping_data *ping_data, u_int8_t ttl);
 
 /********************************** messages.c ********************************/
 void		print_header(t_ping_data *ping_data);
