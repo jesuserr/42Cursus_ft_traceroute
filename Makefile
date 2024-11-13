@@ -6,14 +6,14 @@
 #    By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/12 18:13:12 by jesuserr          #+#    #+#              #
-#    Updated: 2024/11/13 12:08:18 by jesuserr         ###   ########.fr        #
+#    Updated: 2024/11/13 18:34:30 by jesuserr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 LIBFT_DIR = libft/
 
 NAME = ft_traceroute
-SRCS = main.c parser.c signals.c #ft_traceroute.c messages.c
+SRCS = main.c parser.c errors.c ft_traceroute.c messages.c
 PATH_SRCS = ./srcs/
 PATH_OBJS = ./srcs/objs/
 PATH_DEPS = ./srcs/objs/

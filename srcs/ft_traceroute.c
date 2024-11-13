@@ -6,20 +6,11 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:18:46 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/12 18:18:47 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/13 22:03:23 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_traceroute.h"
-
-// Although more complex than inet_ntoa(), the function inet_ntop() is better
-// choice since it is thread-safe.
-const char	*turn_ip_to_str(t_ping_data *ping_data, void *src, char *dst)
-{
-	if (inet_ntop(AF_INET, src, dst, INET_ADDRSTRLEN) == NULL)
-		print_perror_and_exit("inet_ntop", ping_data);
-	return (dst);
-}
 
 // Calculates the checksum of the whole ICMP packet treating it as a sequence of
 // 16-bit words. After the sum it is verified if there is a carry, and if so, it
@@ -67,20 +58,14 @@ void	fill_and_send_icmp_packet(t_ping_data *ping_data)
 	ping_data->packet.icmp_header.un.echo.sequence++;
 }
 
-// Size of icmp_packet when is sent is 64 bytes. When the packet is received its
-// size is 84 bytes, since the 20 bytes IP header is now attached at the
-// beginning. In any case IP header length is calculated (not assumed to be 20).
-// Comment valid only for ICMP_ECHOREPLY packets. ICMP_TIME_EXCEEDED packets
-// follow another rules.
-
 // Since recvfrom() is blocking, conditions EWOULDBLOCK / EAGAIN are checked to
 // see if recvfrom() failed because no data was available to read within the
-// specified timeout period. EINTR is checked to see if recvfrom() failed
-// because it was interrupted by a signal, and if so, function is called again.
-
-// If correct data is received, the loop is broken and the packet info processed
-// and printed, after verification that it is a packet addressed to us and it is
-// of the type we are expecting (ICMP_ECHOREPLY or ICMP_TIME_EXCEEDED).
+// specified timeout period. If correct data is received, the loop is broken and
+// the packet processed.
+// When the packet is received, it contains the IP header of the sender (usually
+// 20 bytes, but calculated anyways), which is casted to a struct iphdr in order
+// to get access to the new ICMP packet to verify if it is a TIME_EXCEEDED
+// packet.
 void	receive_packet(t_ping_data *ping_data)
 {
 	struct iphdr	*ip_header;
@@ -93,8 +78,6 @@ void	receive_packet(t_ping_data *ping_data)
 		{
 			if (errno == EWOULDBLOCK || errno == EAGAIN)
 				return ;
-			else if (errno == EINTR)
-				continue ;
 			else
 				print_perror_and_exit("recvfrom", ping_data);
 		}
@@ -103,37 +86,31 @@ void	receive_packet(t_ping_data *ping_data)
 	ip_header = (struct iphdr *)buff;
 	ft_memcpy(&packet, buff + (ip_header->ihl * 4), sizeof(t_icmp_packet));
 	if (packet.icmp_header.type == ICMP_TIME_EXCEEDED)
-		print_ttl_exceeded_line(ping_data, buff, ip_header);
-	else if (packet.icmp_header.type == ICMP_ECHOREPLY && \
-	packet.icmp_header.un.echo.id == ping_data->packet.icmp_header.un.echo.id)
-		print_response_line(ping_data, packet, ip_header->ttl);
+		print_response_line(ping_data, buff, ip_header);
 }
 
-// Main loop of the program. The first packet is sent and an alarm is set to
-// send the next packet after the predetermined interval. The loop will run
-// indefinitely until user presses Ctrl+C (SIGINT) or any of the following
-// conditions are met:
-// 1. Number of packets received = number of packets specified by the user.
-// 2. Number of ttl packets received = number of packets specified by the user.
-// 3. Number of packets specified by user has been sent and timeout was reached.
-// After loop is broken, the summary is printed and the socket is closed.
-void	ping_loop(t_ping_data *ping_data)
+// Main traceroute function
+void	traceroute(t_ping_data *ping_data)
 {
-	ping_data->timings.min_time = FLOAT_MAX;
+	int	i;
+	int	j;
+
 	print_header(ping_data);
-	fill_and_send_icmp_packet(ping_data);
-	alarm(ping_data->args.interval_seconds);
-	while (1)
+	i = 1;
+	while (i <= ping_data->args.max_hops)
 	{
-		receive_packet(ping_data);
-		if (ping_data->packets_received >= ping_data->args.count || \
-		ping_data->ttl_packets_received >= ping_data->args.count || \
-		((errno == EWOULDBLOCK || errno == EAGAIN) && \
-		ping_data->packet.icmp_header.un.echo.sequence >= \
-		ping_data->args.count))
-			break ;
+		printf("%3d   ", i);
+		j = 1;
+		while (j <= ping_data->args.packets_per_hop)
+		{
+			fill_and_send_icmp_packet(ping_data);
+			receive_packet(ping_data);
+			j++;
+		}
+		ping_data->packet.icmp_header.un.echo.sequence = 0;
+		i++;
+		printf("\n");
 	}
-	print_summary(ping_data);
 	close(ping_data->sockfd);
 	return ;
 }

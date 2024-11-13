@@ -6,13 +6,13 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:17:00 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/13 13:59:31 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/13 18:39:24 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_traceroute.h"
 
-// Sets the socket options to deal with TTL and timeout. The values are set
+// Sets the socket options to deal with 'first-hop' and 'timeout'. Values set
 // according to the arguments passed or the default values if no arguments are
 // passed (handled in the parser).
 void	set_socket_ttl_and_timeout(t_ping_data *ping_data)
@@ -20,9 +20,10 @@ void	set_socket_ttl_and_timeout(t_ping_data *ping_data)
 	int				ret;
 	struct timeval	timeout;
 
-	//ret = setsockopt(ping_data->sockfd, IPPROTO_IP, IP_TTL, &ping_data->args.ttl, sizeof(ping_data->args.ttl));
-	//if (ret == -1)
-	//	print_perror_and_exit("setsockopt ttl", ping_data);
+	ret = setsockopt(ping_data->sockfd, IPPROTO_IP, IP_TTL, \
+	&ping_data->args.first_hop, sizeof(ping_data->args.first_hop));
+	if (ret == -1)
+		print_perror_and_exit("setsockopt ttl", ping_data);
 	timeout.tv_sec = ping_data->args.timeout;
 	timeout.tv_usec = 0;
 	ret = setsockopt(ping_data->sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, \
@@ -71,10 +72,8 @@ int	main(int argc, char **argv)
 		print_error_and_exit("Destination address required");
 	ft_bzero(&ping_data, sizeof(t_ping_data));
 	parse_arguments(argc, argv, &ping_data.args);
-	ft_hex_dump(&ping_data.args, 16, 8);
-	//init_signals(&ping_data);
-	//init_ping_data_and_socket(&ping_data);
-	//set_socket_ttl_and_timeout(&ping_data);
-	//ping_loop(&ping_data);
+	init_ping_data_and_socket(&ping_data);
+	set_socket_ttl_and_timeout(&ping_data);
+	traceroute(&ping_data);
 	return (EXIT_SUCCESS);
 }
