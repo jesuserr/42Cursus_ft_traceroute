@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:18:46 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/13 23:34:27 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 00:03:46 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,10 @@ void	receive_packet(t_ping_data *ping_data)
 		if (recvfrom(ping_data->sockfd, buff, BUFFER_LEN, 0, NULL, NULL) == -1)
 		{
 			if (errno == EWOULDBLOCK || errno == EAGAIN)
+			{
+				ft_putstr_fd("*  ", 1);
 				return ;
+			}
 			else
 				print_perror_and_exit("recvfrom", ping_data);
 		}
@@ -101,6 +104,7 @@ void	traceroute(t_ping_data *ping_data)
 	while (i <= ping_data->args.max_hops)
 	{
 		printf("%3d   ", i++);
+		fflush(stdout);
 		j = 1;
 		set_socket_ttl(ping_data, ping_data->args.first_hop++);
 		while (j++ <= ping_data->args.packets_per_hop)
@@ -109,6 +113,7 @@ void	traceroute(t_ping_data *ping_data)
 			receive_packet(ping_data);
 		}
 		ping_data->packet.icmp_header.un.echo.sequence = 0;
+		ping_data->printed_ip = false;
 		printf("\n");
 	}
 	close(ping_data->sockfd);

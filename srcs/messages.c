@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:19:03 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/13 22:22:04 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 00:03:32 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,6 @@ void	print_response_line(t_ping_data *ping_data, char *buff, \
 	struct timeval	tv;
 	float			time_ms;
 
-	//struct iphdr	*inner_ip_header;	
-	//inner_ip_header = (struct iphdr *)(buff + (ip_header->ihl * 4) + sizeof(struct icmphdr));
 	inner_icmp_packet = (t_icmp_packet *)(buff + (ip_header->ihl * 4) + \
 	sizeof(struct icmphdr) + sizeof(struct iphdr));
 	if (inner_icmp_packet->icmp_header.un.echo.id != \
@@ -58,8 +56,11 @@ void	print_response_line(t_ping_data *ping_data, char *buff, \
 	tv.tv_sec = tv.tv_sec - inner_icmp_packet->seconds;
 	tv.tv_usec = tv.tv_usec - inner_icmp_packet->microseconds;
 	time_ms = tv.tv_sec * 1000 + (float)tv.tv_usec / 1000;
-	if (ping_data->packet.icmp_header.un.echo.sequence == 1)
+	if (!ping_data->printed_ip)
+	{
 		printf("%s", turn_ip_to_str(ping_data, &(ip_header->saddr), \
 		src_addr_str));
+		ping_data->printed_ip = true;
+	}
 	printf("  %.3fms", time_ms);
 }
