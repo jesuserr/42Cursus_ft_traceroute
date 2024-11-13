@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:19:03 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 00:03:32 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 00:53:24 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,10 @@ void	print_header(t_ping_data *ping_data)
 // + original echo request packet (64 bytes). Values between () are not taken by
 // granted, provided just for reference. Access to original ICMP packet is
 // needed to access original timestamp and calculate RTT. If the packet is not
-// addressed to us, it is discarded.
+// addressed to us, return false to keep receiving packets.
 // 1   172.29.160.1  0.125ms  0.097ms  0.059ms 
 // 2   192.168.1.1  0.416ms  0.330ms  0.338ms
-void	print_response_line(t_ping_data *ping_data, char *buff, \
+bool	print_response_line(t_ping_data *ping_data, char *buff, \
 		struct iphdr *ip_header)
 {
 	t_icmp_packet	*inner_icmp_packet;
@@ -50,7 +50,7 @@ void	print_response_line(t_ping_data *ping_data, char *buff, \
 	sizeof(struct icmphdr) + sizeof(struct iphdr));
 	if (inner_icmp_packet->icmp_header.un.echo.id != \
 	ping_data->packet.icmp_header.un.echo.id)
-		return ;
+		return (false);
 	if (gettimeofday(&tv, NULL) == -1)
 		print_perror_and_exit("gettimeofday receive packet", ping_data);
 	tv.tv_sec = tv.tv_sec - inner_icmp_packet->seconds;
@@ -63,4 +63,5 @@ void	print_response_line(t_ping_data *ping_data, char *buff, \
 		ping_data->printed_ip = true;
 	}
 	printf("  %.3fms", time_ms);
+	return (true);
 }

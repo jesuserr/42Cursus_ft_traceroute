@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:17:24 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 00:02:54 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 00:37:56 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void		set_socket_ttl(t_ping_data *ping_data, u_int8_t ttl);
 
 /********************************** messages.c ********************************/
 void		print_header(t_ping_data *ping_data);
-void		print_response_line(t_ping_data *ping_data, char *buff, \
+bool		print_response_line(t_ping_data *ping_data, char *buff, \
 			struct iphdr *ip_header);
 
 /********************************** parser.c **********************************/
