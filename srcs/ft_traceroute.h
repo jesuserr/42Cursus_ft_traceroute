@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:17:24 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 09:45:18 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 10:06:42 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,12 @@
 # define SOCKET_TYPE		SOCK_RAW
 # define SOCKET_PROTOCOL	IPPROTO_ICMP
 # define ICMP_PACKET_SIZE	64
-# define PAYLOAD_40_B		"Written by Jesus Serrano on November '24"
 # define BUFFER_LEN			1024
 # define DEFAULT_FIRST_HOP	1					// first_hop
 # define DEFAULT_MAX_HOPS	64					// max_hops
 # define DEFAULT_PACKETS	3					// packets_per_hop
 # define DEFAULT_TIMEOUT	3					// seconds
-
+# define PAYLOAD_56_B "Written by Jesus Serrano (jesuserr) on Nov '24 for 42BCN"
 /*
 ** -.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-
 **                              STRUCTS
@@ -65,10 +64,7 @@ typedef struct s_arguments
 typedef struct s_icmp_packet
 {
 	struct icmphdr	icmp_header;
-	uint64_t		seconds;
-	uint64_t		microseconds;
-	char			payload[ICMP_PACKET_SIZE - sizeof(struct icmphdr) - \
-					2 * sizeof(uint64_t)];
+	char			payload[ICMP_PACKET_SIZE - sizeof(struct icmphdr)];
 }	t_icmp_packet;
 
 typedef struct s_ping_data
@@ -81,6 +77,8 @@ typedef struct s_ping_data
 	char				ip_str[INET_ADDRSTRLEN];
 	bool				printed_ip;
 	bool				destiny_reached;
+	uint64_t			seconds;
+	uint64_t			microseconds;
 }	t_ping_data;
 
 /*
@@ -97,8 +95,8 @@ void		set_socket_ttl(t_ping_data *ping_data, u_int8_t ttl);
 void		print_header(t_ping_data *ping_data);
 bool		print_response_ttl_exceeded(t_ping_data *ping_data, char *buff, \
 			struct iphdr *ip_header);
-bool		print_response_echo_reply(t_ping_data *ping_data, \
-			t_icmp_packet pckt, struct iphdr *ip_header);
+bool		print_response_echo_reply(t_ping_data *ping_data, u_int16_t id, \
+			struct iphdr *ip_header);
 
 /********************************** parser.c **********************************/
 void		parse_arguments(int argc, char **argv, t_arguments *args);

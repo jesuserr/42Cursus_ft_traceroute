@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:19:03 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 09:43:18 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 10:06:13 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@ bool	print_response_ttl_exceeded(t_ping_data *ping_data, char *buff, \
 		return (false);
 	if (gettimeofday(&tv, NULL) == -1)
 		print_perror_and_exit("gettimeofday receive packet", ping_data);
-	tv.tv_sec = tv.tv_sec - inner_icmp_packet->seconds;
-	tv.tv_usec = tv.tv_usec - inner_icmp_packet->microseconds;
+	tv.tv_sec = tv.tv_sec - ping_data->seconds;
+	tv.tv_usec = tv.tv_usec - ping_data->microseconds;
 	time_ms = tv.tv_sec * 1000 + (float)tv.tv_usec / 1000;
 	if (!ping_data->printed_ip)
 	{
@@ -70,20 +70,20 @@ bool	print_response_ttl_exceeded(t_ping_data *ping_data, char *buff, \
 // If the packet is addressed to us, it means that traceroute reached its
 // destination so the flag 'destiny_reached' is set to true to break the main
 // loop and end the program.
-bool	print_response_echo_reply(t_ping_data *ping_data, t_icmp_packet pckt, \
+bool	print_response_echo_reply(t_ping_data *ping_data, u_int16_t id, \
 		struct iphdr *ip_header)
 {
 	char			src_addr_str[INET_ADDRSTRLEN];
 	struct timeval	tv;
 	float			time_ms;
 
-	if (pckt.icmp_header.un.echo.id != ping_data->packet.icmp_header.un.echo.id)
+	if (id != ping_data->packet.icmp_header.un.echo.id)
 		return (false);
 	ping_data->destiny_reached = true;
 	if (gettimeofday(&tv, NULL) == -1)
 		print_perror_and_exit("gettimeofday receive packet", ping_data);
-	tv.tv_sec = tv.tv_sec - pckt.seconds;
-	tv.tv_usec = tv.tv_usec - pckt.microseconds;
+	tv.tv_sec = tv.tv_sec - ping_data->seconds;
+	tv.tv_usec = tv.tv_usec - ping_data->microseconds;
 	time_ms = tv.tv_sec * 1000 + (float)tv.tv_usec / 1000;
 	if (!ping_data->printed_ip)
 	{

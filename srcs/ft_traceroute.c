@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:18:46 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 09:40:27 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 10:13:13 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,10 @@ uint16_t	calc_checksum(t_icmp_packet *ptr)
 	return ((uint16_t)(~sum));
 }
 
-// Fills the ICMP packet with the necessary data and sends it. The payload
-// includes the time the packet is sent, so the RTT can be calculated when the
-// packet is received.
+// Fills the ICMP packet with the necessary data and sends it. In opposite to
+// ft_ping, the payload does not include the time the packet was sent, because
+// sometimes TIME_EXCEEDED reply packets does not include the original packet,
+// so the RTT cannot be calculated. Whole payload is a fixed 56 bytes string.
 void	fill_and_send_icmp_packet(t_ping_data *ping_data)
 {
 	struct timeval	tv;
@@ -47,8 +48,8 @@ void	fill_and_send_icmp_packet(t_ping_data *ping_data)
 	ping_data->packet.icmp_header.checksum = 0;
 	if (gettimeofday(&tv, NULL) == -1)
 		print_perror_and_exit("gettimeofday send packet", ping_data);
-	ping_data->packet.seconds = tv.tv_sec;
-	ping_data->packet.microseconds = tv.tv_usec;
+	ping_data->microseconds = tv.tv_usec;
+	ping_data->seconds = tv.tv_sec;
 	ping_data->packet.icmp_header.checksum = calc_checksum(&ping_data->packet);
 	bytes_sent = sendto(ping_data->sockfd, &ping_data->packet, \
 	sizeof(ping_data->packet), 0, (struct sockaddr *)&ping_data->dest_addr, \
@@ -90,7 +91,8 @@ void	receive_packet(t_ping_data *ping_data)
 		if ((packet.icmp_header.type == ICMP_TIME_EXCEEDED && \
 		print_response_ttl_exceeded(ping_data, buff, ip_header)) || \
 		(packet.icmp_header.type == ICMP_ECHOREPLY && \
-		print_response_echo_reply(ping_data, packet, ip_header)))
+		print_response_echo_reply(ping_data, packet.icmp_header.un.echo.id, \
+		ip_header)))
 			break ;
 	}
 }
