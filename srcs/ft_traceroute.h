@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:17:24 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 10:51:19 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 11:30:02 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ void		set_socket_ttl(t_ping_data *ping_data, u_int8_t ttl);
 
 /********************************** messages.c ********************************/
 void		print_header(t_ping_data *ping_data);
+void		print_consecutive_number(u_int8_t nbr);
 bool		print_response_ttl_exceeded(t_ping_data *ping_data, char *buff, \
 			struct iphdr *ip_header);
 bool		print_response_echo_reply(t_ping_data *ping_data, u_int16_t id, \

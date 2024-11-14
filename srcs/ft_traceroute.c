@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:18:46 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 10:51:19 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 11:28:44 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,15 +101,14 @@ void	receive_packet(t_ping_data *ping_data)
 // maximum number of hops is reached.
 void	traceroute(t_ping_data *ping_data)
 {
-	int	i;
-	int	j;
+	u_int8_t	i;
+	u_int8_t	j;
 
 	print_header(ping_data);
 	i = 1;
 	while (i <= ping_data->args.max_hops && !ping_data->destiny_reached)
 	{
-		printf("%3d   ", i++);
-		fflush(stdout);
+		print_consecutive_number(i++);
 		j = 1;
 		set_socket_ttl(ping_data, ping_data->args.first_hop++);
 		while (j++ <= ping_data->args.packets_per_hop)

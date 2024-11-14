@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:19:03 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 10:51:19 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 11:35:34 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,25 @@ void	print_header(t_ping_data *ping_data)
 	ping_data->ip_str);
 	printf("traceroute to %s (%s), ", ping_data->args.dest, ping_data->ip_str);
 	printf("%d hops max\n", ping_data->args.max_hops);
+}
+
+// Complicated and unnecessary function to print the consecutive number of the
+// hop because the subject does not allow to use the function fflush().
+void	print_consecutive_number(u_int8_t nbr)
+{
+	if (ft_strlen(ft_itoa(nbr)) == 1)
+	{
+		ft_putstr_fd("  ", 1);
+		ft_putnbr_fd(nbr, 1);
+	}
+	else if (ft_strlen(ft_itoa(nbr)) == 2)
+	{
+		ft_putstr_fd(" ", 1);
+		ft_putnbr_fd(nbr, 1);
+	}
+	else if (ft_strlen(ft_itoa(nbr)) == 3)
+		ft_putnbr_fd(nbr, 1);
+	ft_putstr_fd("   ", 1);
 }
 
 // buff contains the time exceeded received packet, which consists of the source
