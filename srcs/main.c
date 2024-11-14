@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:17:00 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 10:51:19 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 13:09:16 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	init_ping_data_and_socket(t_ping_data *ping_data)
 	ret = getaddrinfo(ping_data->args.dest, NULL, &ping_data->hints, &result);
 	if (ret != 0)
 	{
-		fprintf(stderr, "ft_ping: %s: %s\n", ping_data->args.dest, \
+		fprintf(stderr, "ft_traceroute: %s: %s\n", ping_data->args.dest, \
 		gai_strerror(ret));
 		exit(EXIT_FAILURE);
 	}

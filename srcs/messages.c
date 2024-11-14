@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:19:03 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 11:59:43 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 13:32:38 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,24 @@ void	print_consecutive_number(u_int8_t nbr)
 	ft_putstr_fd("   ", 1);
 }
 
+// Uses getnameinfo() to obtain the hostname of the source address of the
+// packet. It's the inverse of getaddrinfo() used in init_ping_data_and_socket()
+// and is preferred to gethostbyaddr() because it is thread-safe. If the
+// hostname cannot be resolved, the IP address is printed instead.
+void	resolve_hostname(struct sockaddr_in src_addr)
+{
+	char	host[NI_MAXHOST];
+	int		ret;
+
+	src_addr.sin_family = SOCKET_DOMAIN;
+	ret = getnameinfo((struct sockaddr *)&src_addr, sizeof(src_addr), host, \
+	sizeof(host), NULL, 0, NI_NAMEREQD);
+	if (ret == 0)
+		printf(" (%s)", host);
+	else
+		printf(" (%s)", inet_ntoa(src_addr.sin_addr));
+}
+
 // buff contains the time exceeded received packet, which consists of the source
 // IP address (20 bytes) + ICMP header (8 bytes) + original IP header (20 bytes)
 // + original echo request packet (64 bytes). Values between () are not taken by
@@ -53,7 +71,7 @@ bool	print_response_ttl_exceeded(t_ping_data *ping_data, char *buff, \
 		struct iphdr *ip_header)
 {
 	t_icmp_packet		*inner_icmp_packet;
-	struct sockaddr_in	dest_addr;
+	struct sockaddr_in	src_addr;
 	struct timeval		tv;
 	float				time_ms;
 
@@ -69,8 +87,10 @@ bool	print_response_ttl_exceeded(t_ping_data *ping_data, char *buff, \
 	time_ms = tv.tv_sec * 1000 + (float)tv.tv_usec / 1000;
 	if (!ping_data->printed_ip)
 	{
-		dest_addr.sin_addr.s_addr = ip_header->saddr;
-		printf("%s", inet_ntoa(dest_addr.sin_addr));
+		src_addr.sin_addr.s_addr = ip_header->saddr;
+		printf("%s", inet_ntoa(src_addr.sin_addr));
+		if (ping_data->args.resolve_hostnames)
+			resolve_hostname(src_addr);
 		ping_data->printed_ip = true;
 	}
 	printf("  %.3fms", time_ms);
@@ -84,7 +104,7 @@ bool	print_response_ttl_exceeded(t_ping_data *ping_data, char *buff, \
 bool	print_response_echo_reply(t_ping_data *ping_data, u_int16_t id, \
 		struct iphdr *ip_header)
 {
-	struct sockaddr_in	dest_addr;
+	struct sockaddr_in	src_addr;
 	struct timeval		tv;
 	float				time_ms;
 
@@ -98,8 +118,10 @@ bool	print_response_echo_reply(t_ping_data *ping_data, u_int16_t id, \
 	time_ms = tv.tv_sec * 1000 + (float)tv.tv_usec / 1000;
 	if (!ping_data->printed_ip)
 	{
-		dest_addr.sin_addr.s_addr = ip_header->saddr;
-		printf("%s", inet_ntoa(dest_addr.sin_addr));
+		src_addr.sin_addr.s_addr = ip_header->saddr;
+		printf("%s", inet_ntoa(src_addr.sin_addr));
+		if (ping_data->args.resolve_hostnames)
+			resolve_hostname(src_addr);
 		ping_data->printed_ip = true;
 	}
 	printf("  %.3fms", time_ms);
