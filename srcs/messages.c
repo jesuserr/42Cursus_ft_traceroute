@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:19:03 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 10:06:13 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 10:51:19 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 const char	*turn_ip_to_str(t_ping_data *ping_data, void *src, char *dst)
 {
 	if (inet_ntop(AF_INET, src, dst, INET_ADDRSTRLEN) == NULL)
-		print_perror_and_exit("inet_ntop", ping_data);
+		print_strerror_and_exit("inet_ntop", ping_data);
 	return (dst);
 }
 
@@ -52,7 +52,7 @@ bool	print_response_ttl_exceeded(t_ping_data *ping_data, char *buff, \
 	ping_data->packet.icmp_header.un.echo.id)
 		return (false);
 	if (gettimeofday(&tv, NULL) == -1)
-		print_perror_and_exit("gettimeofday receive packet", ping_data);
+		print_strerror_and_exit("gettimeofday receive packet", ping_data);
 	tv.tv_sec = tv.tv_sec - ping_data->seconds;
 	tv.tv_usec = tv.tv_usec - ping_data->microseconds;
 	time_ms = tv.tv_sec * 1000 + (float)tv.tv_usec / 1000;
@@ -81,7 +81,7 @@ bool	print_response_echo_reply(t_ping_data *ping_data, u_int16_t id, \
 		return (false);
 	ping_data->destiny_reached = true;
 	if (gettimeofday(&tv, NULL) == -1)
-		print_perror_and_exit("gettimeofday receive packet", ping_data);
+		print_strerror_and_exit("gettimeofday receive packet", ping_data);
 	tv.tv_sec = tv.tv_sec - ping_data->seconds;
 	tv.tv_usec = tv.tv_usec - ping_data->microseconds;
 	time_ms = tv.tv_sec * 1000 + (float)tv.tv_usec / 1000;

@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:18:46 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 10:13:13 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 10:51:19 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	fill_and_send_icmp_packet(t_ping_data *ping_data)
 
 	ping_data->packet.icmp_header.checksum = 0;
 	if (gettimeofday(&tv, NULL) == -1)
-		print_perror_and_exit("gettimeofday send packet", ping_data);
+		print_strerror_and_exit("gettimeofday send packet", ping_data);
 	ping_data->microseconds = tv.tv_usec;
 	ping_data->seconds = tv.tv_sec;
 	ping_data->packet.icmp_header.checksum = calc_checksum(&ping_data->packet);
@@ -55,7 +55,7 @@ void	fill_and_send_icmp_packet(t_ping_data *ping_data)
 	sizeof(ping_data->packet), 0, (struct sockaddr *)&ping_data->dest_addr, \
 	sizeof(ping_data->dest_addr));
 	if (bytes_sent == -1)
-		print_perror_and_exit("sendto", ping_data);
+		print_strerror_and_exit("sendto", ping_data);
 	ping_data->packet.icmp_header.un.echo.sequence++;
 }
 
@@ -84,7 +84,7 @@ void	receive_packet(t_ping_data *ping_data)
 				ft_putstr_fd("*  ", 1);
 				return ;
 			}
-			print_perror_and_exit("recvfrom", ping_data);
+			print_strerror_and_exit("recvfrom", ping_data);
 		}
 		ip_header = (struct iphdr *)buff;
 		ft_memcpy(&packet, buff + (ip_header->ihl * 4), sizeof(t_icmp_packet));

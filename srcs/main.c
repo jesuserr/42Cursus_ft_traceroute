@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:17:00 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 09:59:13 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 10:51:19 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	set_socket_ttl(t_ping_data *ping_data, u_int8_t ttl)
 
 	ret = setsockopt(ping_data->sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl));
 	if (ret == -1)
-		print_perror_and_exit("setsockopt ttl", ping_data);
+		print_strerror_and_exit("setsockopt ttl", ping_data);
 }
 
 void	set_socket_timeout(t_ping_data *ping_data)
@@ -31,7 +31,7 @@ void	set_socket_timeout(t_ping_data *ping_data)
 	ret = setsockopt(ping_data->sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, \
 	sizeof(timeout));
 	if (ret == -1)
-		print_perror_and_exit("setsockopt timeout", ping_data);
+		print_strerror_and_exit("setsockopt timeout", ping_data);
 }
 
 // Uses getaddrinfo to obtain the destination address and then is stored in
@@ -63,7 +63,7 @@ void	init_ping_data_and_socket(t_ping_data *ping_data)
 	ft_memcpy(ping_data->packet.payload, PAYLOAD_56_B, ft_strlen(PAYLOAD_56_B));
 	ping_data->sockfd = socket(SOCKET_DOMAIN, SOCKET_TYPE, SOCKET_PROTOCOL);
 	if (ping_data->sockfd == -1)
-		print_perror_and_exit("socket", ping_data);
+		print_strerror_and_exit("socket", ping_data);
 }
 
 int	main(int argc, char **argv)

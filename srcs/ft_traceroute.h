@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:17:24 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 10:06:42 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 10:51:19 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 # include <sys/types.h>			// for struct addrinfo
 # include <netdb.h>				// for struct addrinfo
 # include <errno.h>				// for errno
+# include <string.h>			// for strerror
 
 /*
 ** -.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-.-'-
@@ -103,6 +104,6 @@ void		parse_arguments(int argc, char **argv, t_arguments *args);
 
 /********************************** errors.c **********************************/
 void		print_error_and_exit(char *str);
-void		print_perror_and_exit(char *msg, t_ping_data *ping_data);
+void		print_strerror_and_exit(char *msg, t_ping_data *ping_data);
 
 #endif
