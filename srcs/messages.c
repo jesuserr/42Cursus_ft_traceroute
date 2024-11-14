@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:19:03 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 00:53:24 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 09:43:18 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	print_header(t_ping_data *ping_data)
 // addressed to us, return false to keep receiving packets.
 // 1   172.29.160.1  0.125ms  0.097ms  0.059ms 
 // 2   192.168.1.1  0.416ms  0.330ms  0.338ms
-bool	print_response_line(t_ping_data *ping_data, char *buff, \
+bool	print_response_ttl_exceeded(t_ping_data *ping_data, char *buff, \
 		struct iphdr *ip_header)
 {
 	t_icmp_packet	*inner_icmp_packet;
@@ -55,6 +55,35 @@ bool	print_response_line(t_ping_data *ping_data, char *buff, \
 		print_perror_and_exit("gettimeofday receive packet", ping_data);
 	tv.tv_sec = tv.tv_sec - inner_icmp_packet->seconds;
 	tv.tv_usec = tv.tv_usec - inner_icmp_packet->microseconds;
+	time_ms = tv.tv_sec * 1000 + (float)tv.tv_usec / 1000;
+	if (!ping_data->printed_ip)
+	{
+		printf("%s", turn_ip_to_str(ping_data, &(ip_header->saddr), \
+		src_addr_str));
+		ping_data->printed_ip = true;
+	}
+	printf("  %.3fms", time_ms);
+	return (true);
+}
+
+// If the packet is not addressed to us, return false to keep receiving packets.
+// If the packet is addressed to us, it means that traceroute reached its
+// destination so the flag 'destiny_reached' is set to true to break the main
+// loop and end the program.
+bool	print_response_echo_reply(t_ping_data *ping_data, t_icmp_packet pckt, \
+		struct iphdr *ip_header)
+{
+	char			src_addr_str[INET_ADDRSTRLEN];
+	struct timeval	tv;
+	float			time_ms;
+
+	if (pckt.icmp_header.un.echo.id != ping_data->packet.icmp_header.un.echo.id)
+		return (false);
+	ping_data->destiny_reached = true;
+	if (gettimeofday(&tv, NULL) == -1)
+		print_perror_and_exit("gettimeofday receive packet", ping_data);
+	tv.tv_sec = tv.tv_sec - pckt.seconds;
+	tv.tv_usec = tv.tv_usec - pckt.microseconds;
 	time_ms = tv.tv_sec * 1000 + (float)tv.tv_usec / 1000;
 	if (!ping_data->printed_ip)
 	{

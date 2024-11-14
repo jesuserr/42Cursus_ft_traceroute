@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:18:46 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 00:51:09 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/14 09:40:27 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,13 @@ void	fill_and_send_icmp_packet(t_ping_data *ping_data)
 // Since recvfrom() is blocking, conditions EWOULDBLOCK / EAGAIN are checked to
 // see if recvfrom() failed because no data was available to read within the
 // specified timeout period and therefore print "*" and return.
-// If correct data is received, it's a TIME_EXCEEDED packet and is addressed to
-// our process, the response line is printed and the loop is broken. Otherwise,
-// the loop continues.
+// If correct data is received, it's a TIME_EXCEEDED or ECHO_REPLY packet and
+// is addressed to our process, the response line is printed and the loop is 
+// broken. Otherwise, the loop continues.
 // When the packet is received, it contains the IP header of the sender (usually
 // 20 bytes, but calculated anyways), which is casted to a struct iphdr in order
-// to get access to the new ICMP packet to verify if it is a TIME_EXCEEDED
-// packet.
+// to get access to the received ICMP packet to verify its type (TIME_EXCEEDED
+// or ECHO_REPLY).
 void	receive_packet(t_ping_data *ping_data)
 {
 	struct iphdr	*ip_header;
@@ -83,19 +83,20 @@ void	receive_packet(t_ping_data *ping_data)
 				ft_putstr_fd("*  ", 1);
 				return ;
 			}
-			else
-				print_perror_and_exit("recvfrom", ping_data);
+			print_perror_and_exit("recvfrom", ping_data);
 		}
 		ip_header = (struct iphdr *)buff;
 		ft_memcpy(&packet, buff + (ip_header->ihl * 4), sizeof(t_icmp_packet));
-		if (packet.icmp_header.type == ICMP_TIME_EXCEEDED && \
-		print_response_line(ping_data, buff, ip_header))
+		if ((packet.icmp_header.type == ICMP_TIME_EXCEEDED && \
+		print_response_ttl_exceeded(ping_data, buff, ip_header)) || \
+		(packet.icmp_header.type == ICMP_ECHOREPLY && \
+		print_response_echo_reply(ping_data, packet, ip_header)))
 			break ;
 	}
 }
 
-// Main traceroute function
-// Add condition to finish when the destination is reached
+// Send packets with increasing TTL until the destination is reached or the
+// maximum number of hops is reached.
 void	traceroute(t_ping_data *ping_data)
 {
 	int	i;
@@ -103,7 +104,7 @@ void	traceroute(t_ping_data *ping_data)
 
 	print_header(ping_data);
 	i = 1;
-	while (i <= ping_data->args.max_hops)
+	while (i <= ping_data->args.max_hops && !ping_data->destiny_reached)
 	{
 		printf("%3d   ", i++);
 		fflush(stdout);
