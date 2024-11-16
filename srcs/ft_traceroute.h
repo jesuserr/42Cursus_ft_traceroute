@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:17:24 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 11:30:02 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/16 20:08:33 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,8 @@ typedef struct s_ping_data
 void		traceroute(t_ping_data *ping_data);
 
 /********************************** main.c ************************************/
-void		set_socket_ttl(t_ping_data *ping_data, u_int8_t ttl);
+void		print_error_and_exit(char *str);
+void		print_strerror_and_exit(char *msg, t_ping_data *ping_data);
 
 /********************************** messages.c ********************************/
 void		print_header(t_ping_data *ping_data);
@@ -102,9 +103,5 @@ bool		print_response_echo_reply(t_ping_data *ping_data, u_int16_t id, \
 
 /********************************** parser.c **********************************/
 void		parse_arguments(int argc, char **argv, t_arguments *args);
-
-/********************************** errors.c **********************************/
-void		print_error_and_exit(char *str);
-void		print_strerror_and_exit(char *msg, t_ping_data *ping_data);
 
 #endif

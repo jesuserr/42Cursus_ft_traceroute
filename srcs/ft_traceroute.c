@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:18:46 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 11:28:44 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/16 20:13:59 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 // is added to the sum (for this reason sum is a 32-bit integer and not 16-bit).
 // The final checksum is the 16-bit one's complement of the sum.
 // The size of the packet is assumed to be an even number of bytes.
-uint16_t	calc_checksum(t_icmp_packet *ptr)
+static uint16_t	calc_checksum(t_icmp_packet *ptr)
 {
 	uint32_t	sum;
 	uint16_t	*address;
@@ -40,7 +40,7 @@ uint16_t	calc_checksum(t_icmp_packet *ptr)
 // ft_ping, the payload does not include the time the packet was sent, because
 // sometimes TIME_EXCEEDED reply packets does not include the original packet,
 // so the RTT cannot be calculated. Whole payload is a fixed 56 bytes string.
-void	fill_and_send_icmp_packet(t_ping_data *ping_data)
+static void	fill_and_send_icmp_packet(t_ping_data *ping_data)
 {
 	struct timeval	tv;
 	ssize_t			bytes_sent;
@@ -59,6 +59,15 @@ void	fill_and_send_icmp_packet(t_ping_data *ping_data)
 	ping_data->packet.icmp_header.un.echo.sequence++;
 }
 
+static void	set_socket_ttl(t_ping_data *ping_data, u_int8_t ttl)
+{
+	int				ret;
+
+	ret = setsockopt(ping_data->sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl));
+	if (ret == -1)
+		print_strerror_and_exit("setsockopt ttl", ping_data);
+}
+
 // Since recvfrom() is blocking, conditions EWOULDBLOCK / EAGAIN are checked to
 // see if recvfrom() failed because no data was available to read within the
 // specified timeout period and therefore print "*" and return.
@@ -69,7 +78,7 @@ void	fill_and_send_icmp_packet(t_ping_data *ping_data)
 // 20 bytes, but calculated anyways), which is casted to a struct iphdr in order
 // to get access to the received ICMP packet to verify its type (TIME_EXCEEDED
 // or ECHO_REPLY).
-void	receive_packet(t_ping_data *ping_data)
+static void	receive_packet(t_ping_data *ping_data)
 {
 	struct iphdr	*ip_header;
 	char			buff[BUFFER_LEN];

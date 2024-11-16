@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:19:03 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 13:32:38 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/16 20:14:48 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	print_consecutive_number(u_int8_t nbr)
 // packet. It's the inverse of getaddrinfo() used in init_ping_data_and_socket()
 // and is preferred to gethostbyaddr() because it is thread-safe. If the
 // hostname cannot be resolved, the IP address is printed instead.
-void	resolve_hostname(struct sockaddr_in src_addr)
+static void	resolve_hostname(struct sockaddr_in src_addr)
 {
 	char	host[NI_MAXHOST];
 	int		ret;

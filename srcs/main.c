@@ -6,22 +6,31 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:17:00 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/14 13:09:16 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/16 20:13:01 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_traceroute.h"
 
-void	set_socket_ttl(t_ping_data *ping_data, u_int8_t ttl)
+void	print_error_and_exit(char *str)
 {
-	int				ret;
-
-	ret = setsockopt(ping_data->sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl));
-	if (ret == -1)
-		print_strerror_and_exit("setsockopt ttl", ping_data);
+	printf("ft_traceroute: usage error: %s\n", str);
+	printf("Try 'ft_traceroute -h' or 'ft_traceroute -?' for more ");
+	printf("information.\n");
+	exit (EXIT_FAILURE);
 }
 
-void	set_socket_timeout(t_ping_data *ping_data)
+// Prints system error message, closes the socket (if ping_data has been passed
+// containing an open socket) and then exits with EXIT_FAILURE status.
+void	print_strerror_and_exit(char *msg, t_ping_data *ping_data)
+{
+	printf("%s: %s\n", msg, strerror(errno));
+	if (ping_data && ping_data->sockfd > 0)
+		close(ping_data->sockfd);
+	exit(EXIT_FAILURE);
+}
+
+static void	set_socket_timeout(t_ping_data *ping_data)
 {
 	int				ret;
 	struct timeval	timeout;
@@ -37,7 +46,7 @@ void	set_socket_timeout(t_ping_data *ping_data)
 // Uses getaddrinfo to obtain the destination address and then is stored in
 // ping_data->dest_addr.sin_addr. The ICMP packet is initialized with the
 // necessary common values and socket is created.
-void	init_ping_data_and_socket(t_ping_data *ping_data)
+static void	init_ping_data_and_socket(t_ping_data *ping_data)
 {
 	struct addrinfo	*result;
 	int				ret;

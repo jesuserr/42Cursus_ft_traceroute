@@ -6,7 +6,7 @@
 /*   By: jesuserr <jesuserr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 18:19:12 by jesuserr          #+#    #+#             */
-/*   Updated: 2024/11/13 13:57:59 by jesuserr         ###   ########.fr       */
+/*   Updated: 2024/11/16 20:15:50 by jesuserr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 // Mandatory: -h or -? and -V
 // Bonus: -f <first-hop>, -m <max-hops>, -q <packets>, -r and -w <timeout> (5)
-void	print_usage(void)
+static void	print_usage(void)
 {
 	printf("Usage\n"
 		"  ./ft_traceroute [options] <destination>\n\n"
@@ -30,7 +30,7 @@ void	print_usage(void)
 	exit(EXIT_SUCCESS);
 }
 
-bool	check_if_only_digits(char *str)
+static bool	check_if_only_digits(char *str)
 {
 	int	i;
 
@@ -44,7 +44,7 @@ bool	check_if_only_digits(char *str)
 	return (true);
 }
 
-u_int8_t	check_argument_value(int opt, char *opt_arg)
+static u_int8_t	check_argument_value(int opt, char *opt_arg)
 {
 	int32_t	value;
 
@@ -64,7 +64,7 @@ u_int8_t	check_argument_value(int opt, char *opt_arg)
 	return ((u_int8_t)value);
 }
 
-void	parse_options(int opt, t_arguments *args)
+static void	parse_options(int opt, t_arguments *args)
 {
 	if (opt == 'f')
 		args->first_hop = check_argument_value(opt, optarg);
